@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Gestor Eetakemon</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<style>
+    .jumbotron {
+        background-color: chocolate;
+        color: #ffffff;
+        padding: 50px 25px;
+    }
+    .bg-grey {
+        background-color: #f6f6f6;
+    }
+</style>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        $("button").click(function(){
+            $(".container").hide();
+            if($('#RB1').is(':checked')){
+                var data = {name: $('input:text[id=text1]').val(), level: $('input:text[id=text2]').val()};
+                $.ajax({
+                    url: "/eetakemon/add",
+                    type: "POST",
+                    data: JSON.stringify(data),
+                    contentType: "application/json",
+                    success: alert("Añadido!")
+                });
+            } else if($('#RB2').is(':checked')) {
+                var gestEetakemon_URL = "/eetakemon/all";
+                $.getJSON(gestEetakemon_URL, function (data) {
+                    $("#tabla").html('');
+                    if (data != null && $.isArray(data)) {
+                        $.each(data, function (index, value) {
+                            $("#tabla").append("<tr><<td>" + value.name + "</td><td>" + value.level + "</td></tr>");
+                        });
+                    }
+                    else alert("No se han encontrado Eetakemons!");
+                    $(".container").fadeIn("slow");
+                });
+            } else if($('#RB3').is(':checked')){
+                var gestEetakemon_URL = "/eetakemon/name/" + $("#text3").val();
+                $.getJSON(gestEetakemon_URL, function (data) {
+                    $("#tabla").html('');
+                    if (data != null && $.isArray(data)) {
+                        $.each(data, function (index, value) {
+                            $("#tabla").append("<tr><<td>" + value.name + "</td><td>" + value.level + "</td></tr>");
+                        });
+                    }
+                    else alert("No se han encontrado Eetakemons!");
+                    $(".container").fadeIn("slow");
+                });
+            } else if($('#RB4').is(':checked')){
+                $.ajax({
+                    url: "/eetakemon/" + $("#text3").val() + "/delete",
+                    type: "GET",
+                    success: alert("Eetakemon eleminado!")
+                });
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("input[id=RB1]").click(function () {
+            $("#AddForm").show();
+            $("#sbn").hide();
+            $("#enviar").hide();
+        });
+        $("input[id=RB2]").click(function () {
+            $("#AddForm").hide();
+            $("#sbn").hide();
+            $("#enviar").show();
+        });
+        $("input[id=RB3]").click(function () {
+            $("#AddForm").hide();
+            $("#sbn").show();
+            $("#text3").attr("placeholder","Introduce nombre Eetakemon");
+            $("#enviar").hide();
+        });
+        $("input[id=RB4]").click(function () {
+            $("#AddForm").hide();
+            $("#sbn").show();
+            $("#text3").attr("placeholder","Introduce ID Eetakemon");
+            $("#enviar").hide();
+        });
+    });
+</script>
+
+<body>
+<div class="jumbotron text-center">
+    <h1>Gestor Eetakemon</h1>
+    <label class="radio-inline"><input type="radio" id="RB1" name="optradio">Añadir Eetakemon</label>
+    <label class="radio-inline"><input type="radio" id="RB2" name="optradio">Listar Eetakemon</label>
+    <label class="radio-inline"><input type="radio" id="RB3" name="optradio">Buscar por nombre</label>
+    <label class="radio-inline"><input type="radio" id="RB4" name="optradio">Borrar por ID</label><br>
+
+    <br><button type="button" class="btn btn-default" style="display: none" id="enviar">Enviar</button>
+    <form class="form-inline" style="display: none" id="AddForm">
+        <div class="form-group">
+            <input type="text" class="form-control" size="27" id="text1" placeholder="Introduce nombre Eetakemon" required>
+        </div>
+        <div class="form-group">
+            <input type="text" class="form-control" size="27" id="text2" placeholder="Introduce nivel Eetakemon" required>
+        </div>
+        <button type="button" class="btn btn-default">Enviar</button>
+    </form>
+    <form class="form-inline"  id="sbn" style="display: none">
+        <div class="input-group">
+            <input type="text" class="form-control" size="30" id="text3" placeholder="Introduce nombre Eetakemon" required>
+            <div class="input-group-btn">
+                <button type="button" class="btn btn-default">Enviar</button>
+            </div>
+        </div>
+    </form>
+</div>
+<div class="container" style="display: none">
+    <h2>Lista de todos los Eetakemons:</h2>
+    <div class="table-responsive">
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Nombre</th>
+                <th>Nivel</th>
+            </tr>
+            </thead>
+            <tbody id="tabla">
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>
